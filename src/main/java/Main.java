@@ -17,11 +17,11 @@ public class Main {
 
         serverSocket.receive(packet);
 
-        System.out.println("Received data");
+        System.out.println("Received data: " + packet.getData());
 
         ByteBuffer DNSMessage = ByteBuffer.allocate(512);
 
-        Header header = new Header((short)1234, (short)1, (short)0, (short)0, (short)0, (short)0, (short)0, (short)1, (short)1, (short)0, (short)0);
+        Header header = DNSSection.parseHeader(buf);
         header.addHeader(DNSMessage);
 
         Question question = new Question("codecrafters.io", (short)1, (short)1);

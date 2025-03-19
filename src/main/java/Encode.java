@@ -15,7 +15,7 @@ public class Encode {
 
         }
 
-        outputStream.write(0);
+        outputStream.write(0x00);
 
         return outputStream.toByteArray();
 
