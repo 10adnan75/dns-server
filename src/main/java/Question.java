@@ -1,8 +1,6 @@
-import java.io.ByteArrayOutputStream;
 import java.nio.ByteBuffer;
-import java.nio.charset.StandardCharsets;
 
-public class Question implements DNSQuestion {
+public class Question extends Encode implements DNSQuestion {
 
     private String name;
     private short qType;
@@ -26,20 +24,4 @@ public class Question implements DNSQuestion {
 
     }
 
-    public byte[] encodeDomainName(String domainName) {
-
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-
-        for (String label: domainName.split("\\.")) {
-
-            outputStream.write((byte)label.length());
-            outputStream.writeBytes(label.getBytes(StandardCharsets.UTF_8));
-
-        }
-
-        outputStream.write(0);
-
-        return outputStream.toByteArray();
-
-    }
 }
