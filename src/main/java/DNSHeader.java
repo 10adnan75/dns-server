@@ -1,5 +1,7 @@
+import java.nio.ByteBuffer;
+
 public interface DNSHeader {
 
-    public byte[] getResponse(byte[] requestData, int requestLength);
+    public void addHeader(ByteBuffer DNSMessage);
 
 }

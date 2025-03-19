@@ -1,6 +1,7 @@
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
+import java.nio.ByteBuffer;
 
 public class Main {
   public static void main(String[] args) {
@@ -18,15 +19,19 @@ public class Main {
 
         System.out.println("Received data");
 
-        Header defaultHeader = new Header((short)1234, (short)1, (short)0, (short)0, (short)0, (short)0, (short)0, (short)0, (short)0, (short)0, (short)0);
+        ByteBuffer DNSMessage = ByteBuffer.allocate(512);
 
-        byte[] requestData = packet.getData();
-        int requestLength = packet.getLength();
+        Header header = new Header((short)1234, (short)1, (short)0, (short)0, (short)0, (short)0, (short)0, (short)1, (short)0, (short)0, (short)0);
+        header.addHeader(DNSMessage);
 
-        final byte[] bufResponse = defaultHeader.getResponse(requestData, requestLength);
+        Question question = new Question("codecrafters.io", (short)1, (short)1);
+        question.addQuestion(DNSMessage);
+
+        final byte[] bufResponse = DNSMessage.array();
         final DatagramPacket packetResponse = new DatagramPacket(bufResponse, bufResponse.length, packet.getSocketAddress());
 
         serverSocket.send(packetResponse);
+
       }
     } catch (IOException e) {
 

@@ -2,35 +2,48 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
 enum OpCode {
+
     STANDARD_QUERY((short)0);
 
     private final short value;
 
     OpCode(short value) {
+
         this.value = value;
+
     }
 
     public short getValue() {
+
         return value;
+
     }
+
 }
 
 enum ResponseCode {
+
     NO_ERROR((short)0),
     FORMAT_ERROR((short)1);
 
     private final short value;
 
     ResponseCode(short value) {
+
         this.value = value;
+
     }
 
     public short getValue() {
+
         return value;
+
     }
+
 }
 
 public class Header implements DNSHeader {
+
     private short id;
     private short qr;
     private OpCode opCode;
@@ -46,6 +59,7 @@ public class Header implements DNSHeader {
     private short arCount;
 
     public Header(short id, short qr, short aa, short tc, short rd, short ra, short z, short qdCount, short anCount, short nsCount, short arCount) {
+
         this.id = id;
         this.qr = qr;
         this.aa = aa;
@@ -57,15 +71,12 @@ public class Header implements DNSHeader {
         this.anCount = anCount;
         this.nsCount = nsCount;
         this.arCount = arCount;
+
     }
 
     @SuppressWarnings("static-access")
-    public byte[] getResponse(byte[] requestData, int requestLength) {
-        ByteBuffer requestBuffer = ByteBuffer.wrap(requestData, 0, requestLength);
-        int queryId = requestBuffer.getShort() & 0xFFFF;
-    
-        System.out.println("Query ID: " + queryId);
-
+    public void addHeader(ByteBuffer DNSMessage) {
+        
         short flags = 0;
         
         flags |= this.qr << 15; 
@@ -77,20 +88,16 @@ public class Header implements DNSHeader {
         flags |= this.z << 4;  
         flags |= this.rCode.NO_ERROR.getValue();      
 
-        ByteBuffer responseBuffer = ByteBuffer.allocate(12);
+        DNSMessage.order(ByteOrder.BIG_ENDIAN);
 
-        responseBuffer.order(ByteOrder.BIG_ENDIAN);
+        DNSMessage.putShort(this.id);
+        DNSMessage.putShort(flags);
+        DNSMessage.putShort(this.qdCount);
+        DNSMessage.putShort(this.anCount);
+        DNSMessage.putShort(this.nsCount);
+        DNSMessage.putShort(this.arCount);
 
-        responseBuffer.putShort(this.id);
-        responseBuffer.putShort(flags);
-        responseBuffer.putShort(this.qdCount);
-        responseBuffer.putShort(this.anCount);
-        responseBuffer.putShort(this.nsCount);
-        responseBuffer.putShort(this.arCount);
-
-        byte[] header = responseBuffer.array();
-
-        return header;
+        return;
 
     }
 
