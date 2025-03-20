@@ -58,7 +58,7 @@ public class Parser implements IDNSMessage {
 
         }
 
-        new Header(ID, FLAGS, QD_COUNT, AN_COUNT, NS_COUNT, AR_COUNT).addHeader(DNSMessage);
+        new Header(ID, FLAGS, QD_COUNT, QD_COUNT, NS_COUNT, AR_COUNT).addHeader(DNSMessage);
 
         for (int i = 0; i < domainNames.size(); i++) {
 
