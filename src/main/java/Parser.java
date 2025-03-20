@@ -6,7 +6,7 @@ import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.Map;
 
-public class Parser {
+public class Parser implements IDNSMessage {
 
     private Map<String, byte[]> dnsRecords = new HashMap<>();
 
@@ -18,7 +18,7 @@ public class Parser {
 
     private void initializeDnsRecords() {
 
-        dnsRecords.put("example.com", new byte[] { (byte) 93, (byte) 184, (byte) 216, (byte) 34 });
+        dnsRecords.put("10adnan75.github.io", new byte[] { (byte) 42, (byte) 42, (byte) 42, (byte) 42 });
         dnsRecords.put("localhost", new byte[] { 127, 0, 0, 1 });
 
     }
