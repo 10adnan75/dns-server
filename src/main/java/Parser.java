@@ -38,8 +38,15 @@ public class Parser implements IDNSMessage {
         short AN_COUNT = (short) (dataInputStream.readShort() | QD_COUNT);
         short NS_COUNT = dataInputStream.readShort();
         short AR_COUNT = dataInputStream.readShort();
+        short OP_CODE = (short) ((FLAGS >> 11) & 0xF);
 
         FLAGS = (short) (FLAGS | 0x8000);
+
+        if (OP_CODE != 0) {
+
+            FLAGS = (short) ((FLAGS & 0xFFF0) | 0x0004);
+
+        }
 
         List<String> domainNames = new ArrayList<>();
         List<Short> types = new ArrayList<>();
@@ -58,7 +65,7 @@ public class Parser implements IDNSMessage {
 
         }
 
-        new Header(ID, FLAGS, QD_COUNT, QD_COUNT, NS_COUNT, AR_COUNT).addHeader(DNSMessage);
+        new Header(ID, FLAGS, QD_COUNT, AN_COUNT, NS_COUNT, AR_COUNT).addHeader(DNSMessage);
 
         for (int i = 0; i < domainNames.size(); i++) {
 
