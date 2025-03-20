@@ -6,16 +6,16 @@ public class Answer extends EncodeDomainName implements DNSAnswer {
     private short A_TYPE;
     private short A_CLASS;
     private int TTL;
-    private short LENGTH;
+    private short RD_LENGTH;
     private byte[] DATA;
 
-    public Answer(String NAME, short A_TYPE, short A_CLASS, int TTL, short LENGTH, byte[] DATA) {
+    public Answer(String NAME, short A_TYPE, short A_CLASS, int TTL, short RD_LENGTH, byte[] DATA) {
 
         this.NAME = NAME;
         this.A_TYPE = A_TYPE;
         this.A_CLASS = A_CLASS;
         this.TTL = TTL;
-        this.LENGTH = LENGTH;
+        this.RD_LENGTH = RD_LENGTH;
         this.DATA = DATA;
 
     }
@@ -26,7 +26,7 @@ public class Answer extends EncodeDomainName implements DNSAnswer {
         DNSMessage.putShort(this.A_TYPE);
         DNSMessage.putShort(this.A_CLASS);
         DNSMessage.putInt(this.TTL);
-        DNSMessage.putShort(this.LENGTH);
+        DNSMessage.putShort(this.RD_LENGTH);
         DNSMessage.put(this.DATA);
 
         return;
