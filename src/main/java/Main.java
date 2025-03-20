@@ -5,7 +5,31 @@ import java.net.DatagramSocket;
 public class Main {
   public static void main(String[] args) {
 
-    System.out.println("Logs from your program will appear here!");
+    String resolverAddress = null;
+
+    for (int i = 0; i < args.length - 1; i++) {
+
+      if (args[i].equals("--resolver")) {
+
+        resolverAddress = args[i + 1];
+        break;
+
+      }
+
+    }
+
+    if (resolverAddress == null) {
+
+      System.out.println("Resolver address not provided. Use --resolver <address>");
+      return;
+
+    }
+
+    System.out.println("Forwarding DNS server started with resolver: " + resolverAddress);
+
+    String[] addressParts = resolverAddress.split(":");
+    String resolverIp = addressParts[0];
+    int resolverPort = Integer.parseInt(addressParts[1]);
 
     try (DatagramSocket serverSocket = new DatagramSocket(2053)) {
 
@@ -16,9 +40,7 @@ public class Main {
 
         serverSocket.receive(packet);
 
-        System.out.println("Received data: " + new String(packet.getData()));
-
-        final byte[] bufResponse = new Parser().parse(packet);
+        final byte[] bufResponse = new Parser(resolverIp, resolverPort).parse(packet);
         final DatagramPacket packetResponse = new DatagramPacket(bufResponse, bufResponse.length,
             packet.getSocketAddress());
 
