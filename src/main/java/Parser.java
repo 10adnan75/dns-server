@@ -158,6 +158,7 @@ public class Parser implements IDNSMessage {
 
     }
 
+    @SuppressWarnings("unused")
     private byte[] handleMultipleQueries(byte[] data, int packetLength, short originID) throws IOException {
 
         DataInputStream dataInputStream = new DataInputStream(new ByteArrayInputStream(data, 0, packetLength));
