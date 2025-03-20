@@ -54,11 +54,15 @@ public class Parser implements IDNSMessage {
 
             if (QD_COUNT > 1) {
 
-                return handleMultipleQueries(data, packetLength);
+                return handleMultipleQueries(data, packetLength, ID);
 
             } else {
 
-                return forwardQuery(data, packetLength);
+                byte[] response = forwardQuery(data, packetLength);
+                ByteBuffer buffer = ByteBuffer.wrap(response);
+                buffer.putShort(0, ID);
+
+                return response;
 
             }
         } else {
@@ -139,6 +143,7 @@ public class Parser implements IDNSMessage {
                     resolverPort);
 
             socket.send(forwardPacket);
+            socket.setSoTimeout(5000);
 
             byte[] responseBuffer = new byte[512];
             DatagramPacket responsePacket = new DatagramPacket(responseBuffer, responseBuffer.length);
@@ -153,7 +158,7 @@ public class Parser implements IDNSMessage {
 
     }
 
-    private byte[] handleMultipleQueries(byte[] data, int packetLength) throws IOException {
+    private byte[] handleMultipleQueries(byte[] data, int packetLength, short originID) throws IOException {
 
         DataInputStream dataInputStream = new DataInputStream(new ByteArrayInputStream(data, 0, packetLength));
 
@@ -193,7 +198,8 @@ public class Parser implements IDNSMessage {
         }
 
         ByteBuffer combinedResponse = ByteBuffer.allocate(512);
-        new Header(ID, (short) (FLAGS | 0x8000), QD_COUNT, QD_COUNT, (short) 0, (short) 0).addHeader(combinedResponse);
+        new Header(originID, (short) (FLAGS | 0x8000), QD_COUNT, QD_COUNT, (short) 0, (short) 0)
+                .addHeader(combinedResponse);
 
         for (int i = 0; i < domainNames.size(); i++) {
 
@@ -204,7 +210,7 @@ public class Parser implements IDNSMessage {
         for (int i = 0; i < domainNames.size(); i++) {
 
             ByteBuffer singleQuery = ByteBuffer.allocate(512);
-            new Header(ID, FLAGS, (short) 1, (short) 0, (short) 0, (short) 0).addHeader(singleQuery);
+            new Header(originID, FLAGS, (short) 1, (short) 0, (short) 0, (short) 0).addHeader(singleQuery);
             new Question(domainNames.get(i), types.get(i), classes.get(i)).addQuestion(singleQuery);
 
             byte[] queryBytes = new byte[singleQuery.position()];
@@ -218,9 +224,11 @@ public class Parser implements IDNSMessage {
 
             responseStream.skipBytes(12);
 
+            String domainName = readDomainName(singleResponse, responseStream, 12);
             responseStream.readShort();
             responseStream.readShort();
 
+            String answerName = readDomainName(singleResponse, responseStream, 12);
             short answerType = responseStream.readShort();
             short answerClass = responseStream.readShort();
             int ttl = responseStream.readInt();
