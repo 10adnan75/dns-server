@@ -218,11 +218,9 @@ public class Parser implements IDNSMessage {
 
             responseStream.skipBytes(12);
 
-            String domainName = readDomainName(singleResponse, responseStream, 12);
             responseStream.readShort();
             responseStream.readShort();
 
-            String answerName = readDomainName(singleResponse, responseStream, 12);
             short answerType = responseStream.readShort();
             short answerClass = responseStream.readShort();
             int ttl = responseStream.readInt();

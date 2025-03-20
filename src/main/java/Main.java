@@ -3,6 +3,7 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 
 public class Main {
+
   public static void main(String[] args) {
 
     String resolverAddress = null;
@@ -40,9 +41,19 @@ public class Main {
 
         serverSocket.receive(packet);
 
+        System.out.println("\n -------- CLIENT -------- ");
+        System.out.println(" Data length : " + packet.getLength());
+        System.out.println(" [ " + new String(buf, 0, packet.getLength()) + " ]");
+        System.out.println(" Resolver IP : " + resolverIp);
+
         final byte[] bufResponse = new Parser(resolverIp, resolverPort).parse(packet);
         final DatagramPacket packetResponse = new DatagramPacket(bufResponse, bufResponse.length,
             packet.getSocketAddress());
+
+        System.out.println("\n -------- SERVER -------- ");
+        System.out.println(" Data length : " + packetResponse.getLength());
+        System.out.println(" [ " + new String(bufResponse, 0, packetResponse.getLength()) + " ]");
+        System.out.println("\n --------  *  *  -------- \n");
 
         serverSocket.send(packetResponse);
 
